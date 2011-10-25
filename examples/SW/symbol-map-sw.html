@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>wow</title>
+    <title>SW VIZ</title>
     <script type="text/javascript" src="../../d3.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
     <style type="text/css">
@@ -30,7 +30,7 @@ svg {
 
 // The radius scale for the centroids.
 var r = d3.scale.sqrt()
-    .domain([0, 10])
+    .domain([0, 1e6])
     .range([0, 10]);
 
 // Our projection.
@@ -59,7 +59,7 @@ d3.json("../data/sw_data.json", function(collection) {
     .transition()
       .duration(1000)
       .delay(function(d, i) { return i * 50; })
-      .attr("r", function(d) { return r(d.properties.attendance); });
+      .attr("r", function(d) { return r(d.properties.population); });
 });
 
     </script>

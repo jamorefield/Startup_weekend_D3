@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>wow</title>
+    <title>sw x</title>
     <script type="text/javascript" src="../../d3.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
     <style type="text/css">
@@ -13,9 +13,9 @@ svg {
 }
 
 #states path, #state-centroids circle {
-  fill: #ccc;
+  fill: #555;
   stroke: #fff;
-  stroke-width: 1.5px;
+  stroke-width: 1px;
 }
 
 #state-centroids circle {
@@ -28,10 +28,7 @@ svg {
   <body>
     <script type="text/javascript">
 
-// The radius scale for the centroids.
-var r = d3.scale.sqrt()
-    .domain([0, 10])
-    .range([0, 10]);
+
 
 // Our projection.
 var xy = d3.geo.albersUsa();
@@ -55,7 +52,7 @@ d3.json("../data/sw_data.json", function(collection) {
       .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; }))
     .enter().append("svg:circle")
       .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
-      .attr("r", 0)
+      .attr("r", 10)
     .transition()
       .duration(1000)
       .delay(function(d, i) { return i * 50; })

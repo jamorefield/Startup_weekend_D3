@@ -13,20 +13,31 @@ svg {
 }
 
 #states path, #state-centroids circle {
-  fill: #ccc;
+  fill: #5d6067;
   stroke: #fff;
-  stroke-width: 1.5px;
+  stroke-width: 1px;
 }
 
 #state-centroids circle {
-  fill: steelblue;
-  fill-opacity: .8;
+  fill: #fff;
+  fill-opacity: .4;
+  stroke: #1bc92f;
+  stoke-width: 5px;
 }
 
     </style>
   </head>
   <body>
+  <input type="range" min="0" max="500" value="0" step="1" onchange="display_text(this.value)" />
+
     <script type="text/javascript">
+var display_text = function(value){
+  console.log(value);
+}
+
+
+
+
 
 // The radius scale for the centroids.
 var r = d3.scale.sqrt()
@@ -57,7 +68,7 @@ d3.json("../data/sw_data.json", function(collection) {
       .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
       .attr("r", 0)
     .transition()
-      .duration(1000)
+      .duration(2500)
       .delay(function(d, i) { return i * 50; })
       .attr("r", function(d) { return r(d.properties.attendance); });
 });
