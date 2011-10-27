@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>sw x</title>
+    <title>wow</title>
     <script type="text/javascript" src="../../d3.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
     <style type="text/css">
@@ -13,9 +13,9 @@ svg {
 }
 
 #states path, #state-centroids circle {
-  fill: #555;
+  fill: #ccc;
   stroke: #fff;
-  stroke-width: 1px;
+  stroke-width: 1.5px;
 }
 
 #state-centroids circle {
@@ -28,22 +28,41 @@ svg {
   <body>
     <script type="text/javascript">
 
-
+// The radius scale for the centroids.
+var r = d3.scale.sqrt()
+    .domain([0, 10])
+    .range([0, 10]);
 
 // Our projection.
-var xy = d3.geo.albersUsa();
+var xy = d3.geo.azimuthal().scale(240).mode("stereographic"),
+    circle = d3.geo.greatCircle(),
+    path = d3.geo.path().projection(xy),
+    svg = d3.select("body").append("svg:svg");
 
-var svg = d3.select("body").append("svg:svg");
-svg.append("svg:g").attr("id", "states");
-svg.append("svg:g").attr("id", "state-centroids");
-
-d3.json("../data/us-states.json", function(collection) {
-  svg.select("#states")
-    .selectAll("path")
+d3.json("../data/world-countries.json", function(collection) {
+  svg.selectAll("path")
       .data(collection.features)
     .enter().append("svg:path")
-      .attr("d", d3.geo.path().projection(xy));
+      .attr("d", function(d) { return path(circle.clip(d)); })
+    .append("svg:title")
+      .text(function(d) { return d.properties.name; });
 });
+function refresh(duration) {
+  var p = svg.selectAll("path");
+  if (duration) p = p.transition().duration(duration);
+  p.attr("d", function(d) { return path(circle.clip(d)); });
+  d3.select("#lon span")
+      .text(xy.origin()[0]);
+  d3.select("#lat span")
+      .text(xy.origin()[1]);
+  d3.select("#scale span")
+      .text(xy.scale());
+  d3.select("#translate-x span")
+      .text(xy.translate()[0]);
+  d3.select("#translate-y span")
+      .text(xy.translate()[1]);
+}
+
 
 d3.json("../data/sw_data.json", function(collection) {
   svg.select("#state-centroids")
@@ -52,7 +71,7 @@ d3.json("../data/sw_data.json", function(collection) {
       .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; }))
     .enter().append("svg:circle")
       .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
-      .attr("r", 10)
+      .attr("r", 0)
     .transition()
       .duration(1000)
       .delay(function(d, i) { return i * 50; })

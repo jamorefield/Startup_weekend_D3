@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>SW VIZ</title>
+    <title>bing</title>
     <script type="text/javascript" src="../../d3.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
     <style type="text/css">
@@ -19,8 +19,10 @@ svg {
 }
 
 #state-centroids circle {
-  fill: steelblue;
-  fill-opacity: .8;
+  fill: #6dcff4;
+  fill-opacity: .4;
+  stroke: #09DE0C;
+  stroke-width: 8px;
 }
 
     </style>
@@ -30,7 +32,7 @@ svg {
 
 // The radius scale for the centroids.
 var r = d3.scale.sqrt()
-    .domain([0, 1e6])
+    .domain([0, 10])
     .range([0, 10]);
 
 // Our projection.
@@ -48,18 +50,43 @@ d3.json("../data/us-states.json", function(collection) {
       .attr("d", d3.geo.path().projection(xy));
 });
 
-d3.json("../data/sw_data.json", function(collection) {
+d3.json("../data/swviz_data.json", function(collection) {
+  
   svg.select("#state-centroids")
     .selectAll("circle")
       .data(collection.features
-      .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; }))
-    .enter().append("svg:circle")
+      .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; })).enter()
+    .append("svg:circle")
       .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
       .attr("r", 0)
+    // .append("svg:text")
+    //   .attr("text-anchor", "middle")
+    //   .attr("dy", ".3em")
+    //   .text("john")
     .transition()
-      .duration(1000)
-      .delay(function(d, i) { return i * 50; })
-      .attr("r", function(d) { return r(d.properties.population); });
+      .duration(2500)
+      .delay(function(d, i) { return i * 500; })
+      .attr("r", function(d) { return r(d.properties.attendance); })
+      .each("end", animateSecondStep)
+
+
+  function animateSecondStep(){
+      d3.select(this)
+        .style ("fill","#6dcff4")
+        .style ("stroke", "#dee2e4")
+        .style ("stroke-width", "1px")
+        .attr("opacity",".6")
+        
+       .append("svg:text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "1em")
+        .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
+        .text("john")
+      .transition()
+        .duration(2500)
+        .delay(function(d, i) { return i * 500; });
+  }
+
 });
 
     </script>

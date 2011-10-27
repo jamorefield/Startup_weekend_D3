@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>U.S. States</title>
+    <title>bing</title>
     <script type="text/javascript" src="../../d3.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
     <style type="text/css">
@@ -30,7 +30,7 @@ svg {
 
 // The radius scale for the centroids.
 var r = d3.scale.sqrt()
-    .domain([0, 1e6])
+    .domain([0, 10])
     .range([0, 10]);
 
 // Our projection.
@@ -48,19 +48,29 @@ d3.json("../data/us-states.json", function(collection) {
       .attr("d", d3.geo.path().projection(xy));
 });
 
-d3.json("../data/us-state-centroids.json", function(collection) {
+d3.json("../data/swviz_data.json", function(collection) {
   svg.select("#state-centroids")
     .selectAll("circle")
       .data(collection.features
-      .sort(function(a, b) { return b.properties.population - a.properties.population; }))
+      .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; }))
     .enter().append("svg:circle")
       .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
       .attr("r", 0)
     .transition()
-      .duration(1000)
-      .delay(function(d, i) { return i * 50; })
-      .attr("r", function(d) { return r(d.properties.population); });
+      .duration(2500)
+      .delay(function(d, i) { return i * 500; })
+      .attr("r", function(d) { return r(d.properties.attendance); })
+      .each("end", animateSecondStep);
 });
+
+function animateSecondStep(){
+    d3.select(this)
+      .transition()
+        .duration(1000)
+        .attr("opacity",.2);
+
+      
+};
 
     </script>
   </body>

@@ -5,6 +5,7 @@
     <title>wow</title>
     <script type="text/javascript" src="../../d3.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
+        <script type="text/javascript" src="../../d3.time.js"></script>
     <style type="text/css">
 
 svg {
@@ -36,8 +37,11 @@ var display_text = function(value){
 }
 
 
-
-
+// 
+//format.parse("2011-01-01"); // returns a Date
+//format(new Date(2011, 0, 1)); // returns a string
+// Formats.
+var format = d3.time.format("%Y-%m-%d");
 
 // The radius scale for the centroids.
 var r = d3.scale.sqrt()
@@ -59,18 +63,36 @@ d3.json("../data/us-states.json", function(collection) {
       .attr("d", d3.geo.path().projection(xy));
 });
 
-d3.json("../data/sw_data.json", function(collection) {
-  svg.select("#state-centroids")
-    .selectAll("circle")
-      .data(collection.features
-      .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; }))
-    .enter().append("svg:circle")
-      .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
-      .attr("r", 0)
-    .transition()
-      .duration(2500)
-      .delay(function(d, i) { return i * 50; })
-      .attr("r", function(d) { return r(d.properties.attendance); });
+d3.json("../data/swviz_data.json", function(collection) {
+
+ /* var format = d3.time.format("%Y-%m-%d");
+  // change date strings to real dates 
+  var num_events = collection.features.length;
+  console.log("num_events = " + num_events);
+  for (var i = 0; i < num_events; i++){
+    var temp_date = format.parse(collection.features[i].properties.date);
+    console.log(temp_date);
+  }*/
+  // Parse dates and numbers.
+  console.log("hi");
+  // collection.features.forEach(function(d) {
+  //   d.Date = format.parse(d.properties.date);
+  // });
+
+
+  // svg.select("#state-centroids")
+  //   .selectAll("circle")
+  //     .data(collection.features
+  //     .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; }))
+  //   .enter().append("svg:circle")
+  //     .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
+  //     .attr("r", 0)
+  //   .transition()
+  //     .duration(2500)
+  //     .delay(function(d, i) { return i * 500; })
+  //     .attr("r", function(d) { return r(d.properties.attendance);});
+    // .transition.attr()
+    //   fill-opacity: .0;
 });
 
     </script>
