@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>SW Map</title>
+    <title>bing</title>
     <script type="text/javascript" src="../../d3.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
     <style type="text/css">
@@ -19,10 +19,8 @@ svg {
 }
 
 #state-centroids circle {
-  fill: #6dcff4;
-  fill-opacity: .4;
-  stroke: #09DE0C;
-  stroke-width: 8px;
+  fill: steelblue;
+  fill-opacity: .8;
 }
 
     </style>
@@ -40,8 +38,7 @@ var xy = d3.geo.albersUsa();
 
 var svg = d3.select("body").append("svg:svg");
 svg.append("svg:g").attr("id", "states");
-svg.append("svg:g").attr("id", "state-centroids")
-svg.append("svg:g").attr("id", "city");
+svg.append("svg:g").attr("id", "state-centroids");
 
 d3.json("../data/us-states.json", function(collection) {
   svg.select("#states")
@@ -52,52 +49,28 @@ d3.json("../data/us-states.json", function(collection) {
 });
 
 d3.json("../data/swviz_data.json", function(collection) {
-  
   svg.select("#state-centroids")
     .selectAll("circle")
       .data(collection.features
-      .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; })).enter()
-    .append("svg:circle")
+      .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; }))
+    .enter().append("svg:circle")
       .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
       .attr("r", 0)
     .transition()
       .duration(2500)
       .delay(function(d, i) { return i * 500; })
       .attr("r", function(d) { return r(d.properties.attendance); })
-      .each("end", animateSecondStep)
-
-  // svg.select("#city")
-  //     .selectAll("text")
-  //     .data(collection.features
-  //     .sort(function(a, b) { return b.properties.city - a.properties.city; })).enter()
-  //   .append("svg:text")
-  //     .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
-  //     .style
-  //   .transition()
-  //     .duration(2500)
-  //     .delay(function(d, i) { return i * 500; })
-      
-  //     .each("end", animateSecondStep)
-
-
-  function animateSecondStep(){
-      d3.select(this)
-        .style ("fill","#6dcff4")
-        .style ("stroke", "#dee2e4")
-        .style ("stroke-width", "1px")
-        .attr("opacity",".6")
-        
-      // //  .append("svg:text")
-      //   .attr("text-anchor", "middle")
-      //   .attr("dy", "1em")
-      //   .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
-      //   .text("john")
-      // .transition()
-      //   .duration(2500)
-      //   .delay(function(d, i) { return i * 500; });
-  }
-
+      .each("end", animateSecondStep);
 });
+
+function animateSecondStep(){
+    d3.select(this)
+      .transition()
+        .duration(1000)
+        .attr("opacity",.2);
+
+      
+};
 
     </script>
   </body>

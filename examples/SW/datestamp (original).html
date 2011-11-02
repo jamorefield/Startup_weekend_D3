@@ -4,9 +4,11 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title>SW Map</title>
     <script type="text/javascript" src="../../d3.js"></script>
+    <script type="text/javascript" src="../../d3.time.js"></script>
     <script type="text/javascript" src="../../d3.geo.js"></script>
     <style type="text/css">
-
+    <div id="slide">origin.longitude: <span>0</span></div>
+    
 svg {
   width: 960px;
   height: 500px;
@@ -15,14 +17,14 @@ svg {
 #states path, #state-centroids circle {
   fill: #ccc;
   stroke: #fff;
-  stroke-width: 1.5px;
+  stroke-width: .5px;
 }
 
 #state-centroids circle {
   fill: #6dcff4;
   fill-opacity: .4;
   stroke: #09DE0C;
-  stroke-width: 8px;
+  stroke-width: 2px;
 }
 
     </style>
@@ -30,20 +32,30 @@ svg {
   <body>
     <script type="text/javascript">
 
-// The radius scale for the centroids.
+
+
+//The radius scale for the centroids.
 var r = d3.scale.sqrt()
     .domain([0, 10])
     .range([0, 10]);
 
 // Our projection.
-var xy = d3.geo.albersUsa();
+var xy = d3.geo.mercator(),
+    path = d3.geo.path().projection(xy);
+var svg = d3.select("body").append("svg:svg");
+var states = d3.select("body")
+  .append("svg:svg")
+  .append("svg:g")
+    .attr("id", "states");
+
+var xy = d3.geo.mercator();
 
 var svg = d3.select("body").append("svg:svg");
 svg.append("svg:g").attr("id", "states");
 svg.append("svg:g").attr("id", "state-centroids")
 svg.append("svg:g").attr("id", "city");
 
-d3.json("../data/us-states.json", function(collection) {
+d3.json("../data/world-countries.json", function(collection) {
   svg.select("#states")
     .selectAll("path")
       .data(collection.features)
@@ -51,20 +63,55 @@ d3.json("../data/us-states.json", function(collection) {
       .attr("d", d3.geo.path().projection(xy));
 });
 
-d3.json("../data/swviz_data.json", function(collection) {
+d3.json("../data/swviz_world_data.json", function(collection) {
+
+  var format = d3.time.format("%Y-%m-%d");
   
+ 
+  collection.features.forEach(function(d){
+    d.properties.js_date = format.parse(d.properties.date);    
+    d.properties.mill = +format.parse(d.properties.date);
+   });
+  
+  console.log(+date);
+
+
+ var output_data = collection.features.sort(function(a,b){ return a.id - b.id});
+ 
+
   svg.select("#state-centroids")
     .selectAll("circle")
       .data(collection.features
-      .sort(function(a, b) { return b.properties.attendance - a.properties.attendance; })).enter()
+      .sort(function(a, b) { return a.id - b.id; })).enter()
     .append("svg:circle")
       .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
       .attr("r", 0)
     .transition()
-      .duration(2500)
-      .delay(function(d, i) { return i * 500; })
+      .duration(500)
+      // .delay(function(d, i) { return i * 500; })
       .attr("r", function(d) { return r(d.properties.attendance); })
-      .each("end", animateSecondStep)
+      // .each("end", animateSecondStep)
+
+
+
+// $("#slide").slider({
+//   min: -180,
+//   max: 180,
+//   step: 1e-1,
+//   value: 0,
+//   slide: function(event, ui) {
+//     var origin = xy.origin();
+//     origin[0] = ui.value;
+//     xy.origin(origin);
+//     circle.origin(origin);
+//     refresh();
+//   }})
+
+});
+  //   .on("change", change);
+
+  //   function change() {
+  // console.log("value");}
 
   // svg.select("#city")
   //     .selectAll("text")
@@ -80,25 +127,18 @@ d3.json("../data/swviz_data.json", function(collection) {
   //     .each("end", animateSecondStep)
 
 
-  function animateSecondStep(){
-      d3.select(this)
-        .style ("fill","#6dcff4")
-        .style ("stroke", "#dee2e4")
-        .style ("stroke-width", "1px")
-        .attr("opacity",".6")
+  // function animateSecondStep(){
+  //     d3.select(this)
+  //       .style ("fill","#6dcff4")
+  //       .style ("stroke", "#dee2e4")
+  //       .style ("stroke-width", "1px")
+  //       .attr("opacity",".6")
         
-      // //  .append("svg:text")
-      //   .attr("text-anchor", "middle")
-      //   .attr("dy", "1em")
-      //   .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
-      //   .text("john")
-      // .transition()
-      //   .duration(2500)
-      //   .delay(function(d, i) { return i * 500; });
-  }
+     
+ 
+// console.log(.data(collection..properties.city))
 
-});
-
-    </script>
+</script>
   </body>
 </html>
+

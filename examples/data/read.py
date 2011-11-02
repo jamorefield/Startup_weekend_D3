@@ -6,10 +6,10 @@ s = Template("""{"type":"Feature","id":$id,"geometry":{"type":"Point","coordinat
     "properties":{"city":"$city","attendance":$attendance,"date":"$date"}}""")
 
 # Init output file
-ofile = open("swviz_data.json", "w")
+ofile = open("swviz_world_data.json", "w")
 ofile.write("""{"type":"FeatureCollection","features":[\n""")
 
-filename = "swviz_data.csv"
+filename = "swviz_world_data.csv"
 reader = csv.reader(open(filename, "r"))
 
 last_line_no = 0
