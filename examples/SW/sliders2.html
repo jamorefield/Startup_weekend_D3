@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+   <title>sliders</title>
+   <script type="text/javascript" src="../../d3.js"></script>
+   <script type="text/javascript" src="../../d3.geo.js"></script>
+   <script type="text/javascript" src="../../d3.time.js"></script>
+   <script type="text/javascript" src="../../lib/jquery/jquery.min.js"></script>
+   <script type="text/javascript" src="../../lib/jquery-ui/jquery-ui.min.js"></script>
+  <style type="text/css">
+
+@import url("../../lib/jquery-ui/jquery-ui.css");
+
+body, .ui-widget {
+ font: 14px Helvetica Neue;
+}
+
+svg {
+ width: 960px;
+ height: 500px;
+}
+#states path, #state-centroids circle {
+ fill: #ccc;
+ stroke: #fff;
+ stroke-width: .5px;
+}
+
+#state-centroids circle {
+ fill: #6dcff4;
+ fill-opacity: .4;
+ stroke: #09DE0C;
+ stroke-width: 2px;
+}
+
+div {
+ width: 960px;
+}
+
+   </style>
+ </head>
+
+ <body>
+   <h3>Growth of Startup Weekend</h3>
+   <div id="scale">scale: <span>500</span></div><p>
+   <div id="translate-x">translate.x: <span>480</span></div>
+   <div id="translate-y">translate.y: <span>250</span></div>
+
+   <script type="text/javascript">
+
+
+var r = d3.scale.sqrt()
+  .domain([0, 10])
+  .range([0, 10]);
+
+var xy = d3.geo.mercator(), 
+    svg = d3.select("body").append("svg:svg"),
+    local_states = svg.append("svg:g").attr("id", "states"),
+    symbols = svg.append("svg:g").attr("id", "state-centroids"),
+    city = svg.append("svg:g").attr("id", "city"),
+    output_data;
+
+d3.json("../data/world-countries.json", function(countries) {
+  svg.select("#states").selectAll("path")
+    .data(countries.features).enter().append("svg:path")
+      .attr("d", d3.geo.path().projection(xy));
+});
+
+d3.json("../data/swviz_world_data.json", function(collection) {
+
+  var format = d3.time.format("%Y-%m-%d");
+  collection.features.forEach(function(d){
+    d.properties.js_date = format.parse(d.properties.date);
+    d.properties.mill = +format.parse(d.properties.date);
+    output_data = collection.features.sort(function(a,b){ return a.id - b.id});
+  });
+
+  var output_data = collection.features.sort(function(a,b){ return a.id - b.id });
+
+  svg.select("#state-centroids")
+    .selectAll("circle")
+      .data(collection.features
+      .sort(function(a, b) { return a.id - b.id; })).enter()
+    .append("svg:circle")
+      .attr("transform", function(d) { return "translate(" + xy(d.geometry.coordinates) + ")"; })
+      .attr("r", 0)
+    .transition()
+      .duration(500)
+      .delay(function(d, i) { return i * 500; })
+      .attr("r", function(d) { return r(d.properties.attendance)/2; })
+      .each("end", animateSecondStep)
+});
+
+function animateSecondStep(){
+  d3.select(this)
+    .style ("fill","#6dcff4")
+    .style ("stroke", "#dee2e4")
+    .style ("stroke-width", "1px")
+    .attr("opacity",".6")
+ d3.select("#scale span")
+   .text(xy.scale());
+ d3.select("#translate-x span")
+     .text(xy.translate()[0]);
+ d3.select("#translate-y span")
+   .text(xy.translate()[1]);
+}
+
+function refresh() {
+  states.selectAll("path")
+    .attr("d", path);
+  equator.attr("y1", xy([0, 0])[1])
+    .attr("y2", xy([0, 0])[1])
+  d3.select("#scale span")
+    .text(xy.scale());
+  d3.select("#translate-x span")
+    .text(xy.translate()[0]);
+  d3.select("#translate-y span")
+    .text(xy.translate()[1]);
+}
+
+$("#scale").slider({
+  min: 0,
+  max: 3000,
+  value: 500,
+  slide: function(event, ui) {
+    xy.scale(ui.value);
+    refresh();
+  }
+});
+
+// $("#translate-x").slider({
+//   min: -2000,
+//   max: 2000,
+//   value: 480,
+//   slide: function(event, ui) {
+//     var translate = xy.translate();
+//     translate[0] = ui.value;
+//     xy.translate(translate);
+//     refresh();
+//   }
+// });
+
+// $("#translate-y").slider({
+//   min: -2000,
+//   max: 2000,
+//   value: 250,
+//   slide: function(event, ui) {
+//     var translate = xy.translate();
+//     translate[1] = ui.value;
+//     xy.translate(translate);
+//     refresh();
+// }
+// });
+
+
+   </script>
+ </body>
+</html>
